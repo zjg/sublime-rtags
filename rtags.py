@@ -281,6 +281,8 @@ class RtagsCompleteListener(sublime_plugin.EventListener):
                           '--synchronous-completions'  # no async)
                           )
         sugs = []
+        # extract CDATA from <completions> element
+        out = etree.fromstring(out).text
         for line in out.splitlines():
             # line is like this
             # "process void process(CompletionThread::Request *request) CXXMethod"
@@ -292,7 +294,7 @@ class RtagsCompleteListener(sublime_plugin.EventListener):
             # output is list of tuples: first tuple element is what we see in popup menu
             # second is what inserted into file. '$0' is where to place cursor.
             # TODO play with $1, ${2:int}, ${3:string} and so on
-            elements = line.decode('utf-8').split()
+            elements = line.split()
             sugs.append(('{}\t{}'.format(' '.join(elements[1:-1]), elements[-1]),
                          '{}$0'.format(elements[0])))
 
